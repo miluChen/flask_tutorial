@@ -33,7 +33,7 @@ def get_db():
         )
         g.db.row_factory = sqlite3.Row
 
-    return g.db
+    return g.db  # g object lasts for the length of the request
 
 
 def close_db(e=None):
