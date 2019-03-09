@@ -10,7 +10,7 @@ from flaskr.db import get_db
 bp = Blueprint(name='auth', import_name=__name__, url_prefix='/auth')
 
 
-@bp.route('/register', method=('GET', 'POST'))
+@bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
         username = request.form['username']
@@ -92,5 +92,6 @@ def login_required(view):
         if g.user is None:
             return redirect(url_for('auth.login'))
 
-    return wrapped_view
         return view(**kwargs)
+
+    return wrapped_view
