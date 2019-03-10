@@ -1,4 +1,10 @@
 env/
-
-*.pyc
+instance/
+build/
+dist/
+flaskr.egg-info/
 __pycache__/
+
+run.sh
+*.pyc
+.*
