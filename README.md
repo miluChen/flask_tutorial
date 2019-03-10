@@ -1,4 +1,4 @@
-#TODO
+# TODO
 
 1.    A detail view to show a single post. Click a post’s title to go to its page.
 2.    Like / unlike a post.
