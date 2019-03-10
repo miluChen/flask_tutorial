@@ -6,10 +6,6 @@
 
 {% block content %}
 	<form method="post">
-		<label for="itle">itle</label>
-		<input name="itle" id="itle" value="{{ request.form['title']}}" required>
-		<label for="tle">tle</label>
-		<input name="tle" id="tle" value="{{ post['title'] }}" required>
 		<label for="title">Title</label>
 		<input name="title" id="title" value="{{ request.form['title'] or post['title'] }}" required>
 		<label for="body">Body</label>

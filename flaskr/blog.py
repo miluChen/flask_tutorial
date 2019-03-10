@@ -88,13 +88,6 @@ def update(id):
             db.commit()
             return redirect(url_for('blog.index'))
 
-    print ("======")
-    print(request.method)
-    print (post["title"])
-    print (post["body"])
-    # print ("++++++")
-    # print (request.form["title"])
-    # print (request.form["body"])
     return render_template('blog/update.html', post=post)
 
 
