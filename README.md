@@ -9,3 +9,5 @@
 7.    Upload an image to go along with a post.
 8.    Format posts using Markdown.
 9.    An RSS feed of new posts.
+- [x] And password confirmation mechanism.
+11.   Add support for password recovery.
