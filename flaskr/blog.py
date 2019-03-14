@@ -46,6 +46,17 @@ def create():
     return render_template('blog/create.html')
 
 
+@bp.route('/<int:id>/view', methods=('GET', 'POST'))
+def view(id):
+    post = get_post(id, check_author=False)
+
+    if request.method == 'POST':
+        # TODO: like/unlike
+        pass
+
+    return render_template('blog/view.html', post=post)
+
+
 def get_post(id, check_author=True):
     post = get_db().execute(
         'SELECT p.id, title, body, created, author_id, username'
