@@ -22,8 +22,8 @@ CREATE TABLE post (
 CREATE TABLE feedback (
 	post_id INTEGER NOT NULL,
 	author_id INTEGER NOT NULL,
-	like BOOLEAN DEFAULT FALSE,
-	unlike BOOLEAN DEFAULT FALSE,
+	like INTEGER DEFAULT 0,
+	unlike INTEGER DEFAULT 0,
 	comment TEXT DEFAULT NULL,
 	PRIMARY KEY (post_id, author_id),
 	FOREIGN KEY (post_id) REFERENCES post (id),

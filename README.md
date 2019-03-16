@@ -12,3 +12,9 @@
 - [x] Add password confirmation mechanism.
 11.   Add support for password recovery.
 12.   In index page, show a description of the post. The description is obtained from ML method.
+
+
+How to use:
+
+under the directory: flask\_tutorial
+run: `export FLASK_APP=flaskr; export FLASK_ENV=development; flask run`

@@ -56,14 +56,14 @@ def view(id, choose_like=None, choose_unlike=None, comment=None):
 @login_required
 def user_like(id):
     post = get_post(id, check_author=False)
-    feedback = get_feedback(id)
+    feedback = get_feedback(id, g.user['id'])
     db = get_db()
 
-    if feedback == None:
+    if feedback is None:
         db.execute(
             'INSERT INTO feedback (post_id, author_id, like)'
             ' VALUES (?, ?, ?)',
-            (id, g.user['id'], True)
+            (id, g.user['id'], 1)
         )
         thumbsup = post['thumbsup'] + 1
         db.execute(
@@ -73,14 +73,14 @@ def user_like(id):
         post = get_post(id, check_author=False)
     else:
         like, unlike, thumbsup, thumbsdown = feedback['like'], feedback['unlike'], post['thumbsup'], post['thumbsdown']
-        if like is True:
-            like = False
+        if like:  # `if like is True` will cause error behavior
+            like = 0
             thumbsup -= 1
         else:
-            like = True
+            like = 1
             thumbsup += 1
-            if unlike is True:
-                unlike = False
+            if unlike:
+                unlike = 0
                 thumbsdown -= 1
         db.execute(
             'UPDATE feedback SET like = ?, unlike = ?'
@@ -94,6 +94,7 @@ def user_like(id):
         )
         db.commit()
 
+    post = get_post(id, check_author=False)
     return render_template('blog/view.html', post=post)
 
 
@@ -101,16 +102,16 @@ def user_like(id):
 @login_required
 def user_unlike(id):
     post = get_post(id, check_author=False)
-    feedback = get_feedback(id)
+    feedback = get_feedback(id, g.user['id'])
     db = get_db()
 
-    if feedback == None:
+    if feedback is None:
         db.execute(
             'INSERT INTO feedback (post_id, author_id, unlike)'
             ' VALUES (?, ?, ?)',
-            (id, g.user['id'], True)
+            (id, g.user['id'], 1)
         )
-        thumbsup = post['thumbsdown'] + 1
+        thumbsdown = post['thumbsdown'] + 1
         db.execute(
             'UPDATE post SET thumbsdown = ? WHERE id = ?', (thumbsdown, id)
         )
@@ -118,14 +119,15 @@ def user_unlike(id):
         post = get_post(id, check_author=False)
     else:
         like, unlike, thumbsup, thumbsdown = feedback['like'], feedback['unlike'], post['thumbsup'], post['thumbsdown']
-        if unlike is True:
-            unlike = False
+        print (like, unlike, thumbsup, thumbsdown)
+        if unlike:
+            unlike = 0
             thumbsdown -= 1
         else:
-            unlike = True
+            unlike = 1
             thumbsdown += 1
-            if like is True:
-                like = False
+            if like:
+                like = 0
                 thumbsup -= 1
         db.execute(
             'UPDATE feedback SET like = ?, unlike = ?'
@@ -139,6 +141,7 @@ def user_unlike(id):
         )
         db.commit()
 
+    post = get_post(id, check_author=False)
     return render_template('blog/view.html', post=post)
 
 
@@ -159,11 +162,11 @@ def get_post(id, check_author=True):
     return post
 
 
-def get_feedback(id):
+def get_feedback(post_id, user_id):
     feedback = get_db().execute(
         'SELECT like, unlike, comment'
         ' FROM feedback WHERE post_id = ? AND author_id = ?',
-        (id, g.user['id'])
+        (post_id, user_id)
     ).fetchone()
 
     return feedback
@@ -203,5 +206,6 @@ def delete(id):
     get_post(id)
     db = get_db()
     db.execute('DELETE FROM post WHERE id = ?', (id,))
+    db.execute('DELETE FROM feedback WHERE post_id = ?', (id,))
     db.commit()
     return redirect(url_for('blog.index'))
