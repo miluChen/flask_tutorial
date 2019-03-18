@@ -47,9 +47,10 @@ def create():
 
 
 @bp.route('/<int:id>/view', methods=('GET', 'POST'))
-def view(id, choose_like=None, choose_unlike=None, comment=None):
+def view(id):
     post = get_post(id, check_author=False)
-    return render_template('blog/view.html', post=post)
+    comments = get_comment(id)
+    return render_template('blog/view.html', post=post, comments=comments)
 
 
 @bp.route('/<int:id>/like', methods=('POST',))
@@ -95,7 +96,8 @@ def user_like(id):
         db.commit()
 
     post = get_post(id, check_author=False)
-    return render_template('blog/view.html', post=post)
+    comments = get_comment(id)
+    return render_template('blog/view.html', post=post, comments=comments)
 
 
 @bp.route('/<int:id>/unlike', methods=('POST',))
@@ -119,7 +121,6 @@ def user_unlike(id):
         post = get_post(id, check_author=False)
     else:
         like, unlike, thumbsup, thumbsdown = feedback['like'], feedback['unlike'], post['thumbsup'], post['thumbsdown']
-        print (like, unlike, thumbsup, thumbsdown)
         if unlike:
             unlike = 0
             thumbsdown -= 1
@@ -142,7 +143,40 @@ def user_unlike(id):
         db.commit()
 
     post = get_post(id, check_author=False)
-    return render_template('blog/view.html', post=post)
+    comments = get_comment(id)
+    return render_template('blog/view.html', post=post, comments=comments)
+
+
+@bp.route('/<int:id>/comment', methods=('POST',))
+@login_required
+def user_comment(id):
+    post = get_post(id, check_author=False)
+
+
+    if request.method == 'POST':
+        comment = request.form["comment"]
+        db = get_db()
+        db.execute(
+            'INSERT INTO comment (content, author_id, post_id)'
+            ' VALUES (?, ?, ?)',
+            (comment, g.user['id'], id)
+        )
+        db.commit()
+
+    comments = get_comment(id)
+    return render_template('blog/view.html', post=post, comments=comments)
+
+
+def get_comment(id):
+    comments = get_db().execute(
+        'SELECT c.content, created, author_id, username'
+        ' FROM comment c JOIN user u ON c.author_id = u.id'
+        ' WHERE c.post_id = ?'
+        ' ORDER BY created DESC',
+        (id,)
+    ).fetchall()
+
+    return comments
 
 
 def get_post(id, check_author=True):
@@ -164,7 +198,7 @@ def get_post(id, check_author=True):
 
 def get_feedback(post_id, user_id):
     feedback = get_db().execute(
-        'SELECT like, unlike, comment'
+        'SELECT like, unlike'
         ' FROM feedback WHERE post_id = ? AND author_id = ?',
         (post_id, user_id)
     ).fetchone()
@@ -207,5 +241,6 @@ def delete(id):
     db = get_db()
     db.execute('DELETE FROM post WHERE id = ?', (id,))
     db.execute('DELETE FROM feedback WHERE post_id = ?', (id,))
+    db.execute('DELETE FROM comment WHERE post_id = ?', (id,))
     db.commit()
     return redirect(url_for('blog.index'))

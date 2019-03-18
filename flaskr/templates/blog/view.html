@@ -21,4 +21,24 @@
 	<article class="post">
 		<p class="body">{{ post['body'] }}</p>
 	</article>
+	<form action="{{ url_for('blog.user_comment', id=post['id']) }}" method="post">
+		<label for="comment">Add Comment</label>
+		<textarea name="comment" id="comment"></textarea>
+		<input type="submit" value="COMMENT">
+	</form>
+
+	{% for comment in comments %}
+		<article class="comment">
+			<header>
+				<div>
+					<div class="about">by {{ comment['username'] }} on {{ comment['created'].strftime('%Y-%m-%d-%H-%M-%S') }}</div>
+				</div>
+			</header>
+			<p class="content">{{ comment['content'] }}</p>
+		</article>
+		{% if not loop.last %}
+			<hr>
+		{% endif %}
+	{% endfor %}
+
 {% endblock %}
