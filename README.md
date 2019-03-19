@@ -17,4 +17,5 @@
 How to use:
 
 under the directory: flask\_tutorial
-run: `export FLASK_APP=flaskr; export FLASK_ENV=development; flask run`
+
+run: `export FLASK_APP=flaskr; export FLASK_ENV=development; flask init-db; flask run`

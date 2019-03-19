@@ -2,6 +2,8 @@ DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS feedback;
 DROP TABLE IF EXISTS comment;
+DROP TABLE IF EXISTS tag;
+DROP TABLE IF EXISTS post_tag_relation;
 
 CREATE TABLE user (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,3 +41,19 @@ CREATE TABLE comment (
 	FOREIGN KEY (author_id) REFERENCES user (id)
 	FOREIGN KEY (post_id) REFERENCES post (id)
 );
+
+CREATE TABLE tag (
+	name TEXT NOT NULL PRIMARY KEY
+);
+
+CREATE TABLE post_tag_relation (
+	post_id INTEGER NOT NULL,
+	tag_name TEXT NOT NULL,
+	PRIMARY KEY (post_id, tag_name),
+	FOREIGN KEY (post_id) REFERENCES post (id),
+	FOREIGN KEY (tag_name) REFERENCES tag (name)
+);
+
+INSERT INTO tag (name)
+VALUES
+	('technology'), ('history'), ('art'), ('science'), ('math'), ('life'), ('other');
